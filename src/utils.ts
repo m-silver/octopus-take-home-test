@@ -11,7 +11,7 @@ export const findReleaseByDeployment = (releases: Release[], deployment: Deploym
 }
 
 export const retentionReason = (release: Release, environment: Environment, index?: number): string => {
-  var reason = 'only'
+  let reason = 'only'
   if (index === 0 || index) 
   switch (true) {
     case index === 0: 
