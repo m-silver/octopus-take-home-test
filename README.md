@@ -15,8 +15,6 @@ Run the app in the development mode.
 ```
 yarn start
 ```
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
 As per instructions, no UI has been built for this project.
 
 ## Release Retention Algorithm
@@ -44,9 +42,10 @@ Launches the test runner in the interactive watch mode.
 
 ## Notes/Improvements
 
-- For the sake of the excercise, console.log and console.error are used in lieu of proper logging and error handling.
+- Although no UI was to be built, this was bootstrapped with Create React App for the efficiency of setup
+- For the sake of the excercise, `console.log` and `console.error` are used in lieu of proper logging and error handling.
 - Add a `projectId` field to `deployments` for easier data management.
 - Add `projectId` as a parameter to `useReleaseRetention` so that it can be actioned on a per project basis.
 - Add an optional `releaseRetentionReason` field to releases for logging.
-- What happens when a release is kept for multiple reasons (environments), is each reason logged or only the most recent?
-- The rule states that only deployed releases are kept, what about new releases that have not been deployed yet?
+- What happens when a `release` is kept for multiple reasons (`environments`), is each reason logged or only the most recent?
+- The rule states that only deployed `releases` are kept, what about new `releases` that have not been deployed yet?
