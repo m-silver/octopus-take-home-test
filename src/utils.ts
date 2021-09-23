@@ -12,25 +12,29 @@ export const findReleaseByDeployment = (releases: Release[], deployment: Deploym
 
 export const retentionReason = (release: Release, environment: Environment, index?: number): string => {
   let reason = 'only'
-  if (index === 0 || index) 
-  switch (true) {
-    case index === 0: 
-      reason = 'most recent'; 
-      break;
-    case index === 1: 
-      reason = '2nd most recent';
-      break;
-    case index === 2: 
-      reason = '3rd most recent'; 
-      break;
-    case index > 3: 
-      reason = `${index+1}th most recent`; 
-      break;
-  }
+  if (index === 0) reason = 'most recent'
+  if (index && index > 0) reason = `${formatOrdinals(index+1)} most recent`
+
   return `${release.Id} kept because it is the ${reason} deployment to ${environment.Id}`
 }
 
 export const removeDuplicateReleases = (releases: Release[]): Release[] => {
   return releases.filter((release, index, releases) => 
     releases.findIndex(current => (current.Id === release.Id)) === index)
+}
+
+export const formatOrdinals = (ordinal: number): string => {
+const pr = new Intl.PluralRules('en-US', { type: 'ordinal' })
+
+const suffixes = new Map([
+  ['one',   'st'],
+  ['two',   'nd'],
+  ['few',   'rd'],
+  ['other', 'th'],
+]);
+
+const rule = pr.select(ordinal)
+const suffix = suffixes.get(rule)
+
+return `${ordinal}${suffix}`
 }

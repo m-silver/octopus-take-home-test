@@ -2,7 +2,8 @@ import {
   sortDeploymentsByDate, 
   findReleaseByDeployment, 
   retentionReason, 
-  removeDuplicateReleases 
+  removeDuplicateReleases,
+  formatOrdinals
 } from '../utils'
 
 describe('sortDeploymentsByDate', () => {
@@ -114,25 +115,52 @@ describe('retentionReason', () => {
       "Name": "Staging"
     }
 
-    const reason1 = retentionReason(release, environment, 0)
-    const expectedReason1 = `${release.Id} kept because it is the most recent deployment to ${environment.Id}`
+    const reason0 = retentionReason(release, environment, 0)
+    expect(reason0).toBe(`${release.Id} kept because it is the most recent deployment to ${environment.Id}`)
 
-    expect(reason1).toBe(expectedReason1)
+    const reason1 = retentionReason(release, environment, 1)
+    expect(reason1).toBe(`${release.Id} kept because it is the 2nd most recent deployment to ${environment.Id}`)
 
-    const reason2 = retentionReason(release, environment, 1)
-    const expectedReason2 = `${release.Id} kept because it is the 2nd most recent deployment to ${environment.Id}`
+    const reason2 = retentionReason(release, environment, 2)
+    expect(reason2).toBe(`${release.Id} kept because it is the 3rd most recent deployment to ${environment.Id}`)
 
-    expect(reason2).toBe(expectedReason2)
+    const reason7 = retentionReason(release, environment, 7)
+    expect(reason7).toBe(`${release.Id} kept because it is the 8th most recent deployment to ${environment.Id}`)
 
-    const reason3 = retentionReason(release, environment, 2)
-    const expectedReason3 = `${release.Id} kept because it is the 3rd most recent deployment to ${environment.Id}`
+    const reason21 = retentionReason(release, environment, 21)
+    expect(reason21).toBe(`${release.Id} kept because it is the 22nd most recent deployment to ${environment.Id}`)
 
-    expect(reason3).toBe(expectedReason3)
+    const reason32 = retentionReason(release, environment, 32)
+    expect(reason32).toBe(`${release.Id} kept because it is the 33rd most recent deployment to ${environment.Id}`)
 
-    const reason7 = retentionReason(release, environment, 6)
-    const expectedReason7 = `${release.Id} kept because it is the 7th most recent deployment to ${environment.Id}`
+    const reason40 = retentionReason(release, environment, 40)
+    expect(reason40).toBe(`${release.Id} kept because it is the 41st most recent deployment to ${environment.Id}`)
+  })
+})
 
-    expect(reason7).toBe(expectedReason7)
+describe('formatOrdinals', () => {
+  it('returns the correct order suffix based on number', () => {
+    const suffix1 = formatOrdinals(1)
+    const suffix2 = formatOrdinals(2)
+    const suffix3 = formatOrdinals(3)
+    const suffix7 = formatOrdinals(7)
+    const suffix11 = formatOrdinals(11)
+    const suffix12 = formatOrdinals(12)
+    const suffix21 = formatOrdinals(21)
+    const suffix42 = formatOrdinals(42)
+    const suffix73 = formatOrdinals(73)
+    const suffix97 = formatOrdinals(97)
+
+    expect(suffix1).toBe('1st')
+    expect(suffix2).toBe('2nd')
+    expect(suffix3).toBe('3rd')
+    expect(suffix7).toBe('7th')
+    expect(suffix11).toBe('11th')
+    expect(suffix12).toBe('12th')
+    expect(suffix21).toBe('21st')
+    expect(suffix42).toBe('42nd')
+    expect(suffix73).toBe('73rd')
+    expect(suffix97).toBe('97th')
   })
 })
 
@@ -170,3 +198,5 @@ describe('removeDuplicateReleases', () => {
     expect(unique.length).toBe(2)
   })
 })
+
+
