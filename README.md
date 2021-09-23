@@ -2,6 +2,8 @@
 
 This is the Octopus Deploy Take Home Test, or DevOps Deploy Code Puzzle.
 
+Instructions for the test can be viewed [here.](Start_Here.md)
+
 ## Setup
 
 Install yarn and dependencies.
