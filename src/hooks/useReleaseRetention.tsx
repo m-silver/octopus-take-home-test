@@ -18,31 +18,19 @@ const useReleaseRetention = ({numberOfReleases, deployments, environments, proje
 
   projects.forEach(project => {
     const projectReleases = releases.filter(release => release.ProjectId === project.Id)
-    const projectDeployments = projectReleases.map(projectRelease => 
-      deployments.filter(deployment => deployment.ReleaseId === projectRelease.Id)).flat()
+    const projectDeployments = projectReleases.map(projectRelease => deployments.filter(deployment => deployment.ReleaseId === projectRelease.Id)).flat()
 
     environments.forEach(environment => {
       const deploymentsToEnvironment = projectDeployments.filter(projectDeployment => projectDeployment.EnvironmentId === environment.Id)
+      const sortedDeployments = sortDeploymentsByDate(deploymentsToEnvironment)
 
-      if (deploymentsToEnvironment.length === 1) {
-        const releaseToRetain = findReleaseByDeployment(projectReleases, deploymentsToEnvironment[0])
+      for (let i = 0; i < numberOfReleases && i < sortedDeployments.length; i++) {
+        const releaseToRetain = findReleaseByDeployment(projectReleases, deploymentsToEnvironment[i])
         if (releaseToRetain) {
           retainedReleases.push(releaseToRetain)
-          console.log(retentionReason(releaseToRetain, environment))
-        }
+          console.log(retentionReason(releaseToRetain, environment, deploymentsToEnvironment.length === 1 ? undefined : i))
+        }           
         else console.error(`Release ${deploymentsToEnvironment[0].ReleaseId} not found.`)
-      }
-
-      if (deploymentsToEnvironment.length > 1) {
-        const sorted = sortDeploymentsByDate(deploymentsToEnvironment)
-        for (let i = 0; i < numberOfReleases && i < sorted.length; i++) {
-          const releaseToRetain = findReleaseByDeployment(projectReleases, deploymentsToEnvironment[i])
-          if (releaseToRetain) {
-            retainedReleases.push(releaseToRetain)
-            console.log(retentionReason(releaseToRetain, environment, i))
-          }           
-          else console.error(`Release ${deploymentsToEnvironment[0].ReleaseId} not found.`)
-        }
       }
     })
   })
@@ -51,3 +39,24 @@ const useReleaseRetention = ({numberOfReleases, deployments, environments, proje
 }
 
 export default useReleaseRetention
+
+// if (deploymentsToEnvironment.length === 1) {
+//   const releaseToRetain = findReleaseByDeployment(projectReleases, deploymentsToEnvironment[0])
+//   if (releaseToRetain) {
+//     retainedReleases.push(releaseToRetain)
+//     console.log(retentionReason(releaseToRetain, environment))
+//   }
+//   else console.error(`Release ${deploymentsToEnvironment[0].ReleaseId} not found.`)
+// }
+
+// if (deploymentsToEnvironment.length > 1) {
+//   const sorted = sortDeploymentsByDate(deploymentsToEnvironment)
+//   for (let i = 0; i < numberOfReleases && i < sorted.length; i++) {
+//     const releaseToRetain = findReleaseByDeployment(projectReleases, deploymentsToEnvironment[i])
+//     if (releaseToRetain) {
+//       retainedReleases.push(releaseToRetain)
+//       console.log(retentionReason(releaseToRetain, environment, deploymentsToEnvironment.length === 1 ? undefined : i))
+//     }           
+//     else console.error(`Release ${deploymentsToEnvironment[0].ReleaseId} not found.`)
+//   }
+// }
