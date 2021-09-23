@@ -1,46 +1,50 @@
-# Getting Started with Create React App
+# Octopus Take Home Test
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the Octopus Deploy Take Home Test, or DevOps Deploy Code Puzzle.
 
-## Available Scripts
+## Setup
 
-In the project directory, you can run:
-
-### `yarn start`
-
-Runs the app in the development mode.\
+Install yarn and dependencies.
+```
+npm install yarn
+yarn
+```
+Run the app in the development mode.
+```
+yarn start
+```
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+As per instructions, no UI has been built for this project.
 
-### `yarn test`
+## Release Retention Algorithm
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This has been implemented as a React Hook; `useReleaseRetention`.
 
-### `yarn build`
+This hook can be found under `src/hooks`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Some utility functions have been abstracted to `src/utils.ts`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Type Definitions
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Type definitions can be found under `src/types`.
 
-### `yarn eject`
+## Tests
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+This project uses Jest test runner.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+You will find tests under `src/tests`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+yarn test
+``` 
+Launches the test runner in the interactive watch mode.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Notes/Improvements
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- For the sake of the excercise, console.log and console.error are used in lieu of proper logging and error handling.
+- Add a `projectId` field to `deployments` for easier data management.
+- Add `projectId` as a parameter to `useReleaseRetention` so that it can be actioned on a per project basis.
+- Add an optional `releaseRetentionReason` field to releases for logging.
+- What happens when a release is kept for multiple reasons (environments), is each reason logged or only the most recent?
+- The rule states that only deployed releases are kept, what about new releases that have not been deployed yet?
