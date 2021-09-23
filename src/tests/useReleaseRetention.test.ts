@@ -55,7 +55,7 @@ describe('useReleaseRetention', () => {
       }
     ]
     
-    const releasesToRetain = useReleaseRetention({
+    const releasesToRetain2 = useReleaseRetention({
       projects, 
       deployments, 
       environments, 
@@ -63,10 +63,21 @@ describe('useReleaseRetention', () => {
       numberOfReleases: 2
     })
 
-    expect(releasesToRetain).toHaveLength(2)
+    expect(releasesToRetain2).toHaveLength(2)
+
+    const releasesToRetain3 = useReleaseRetention({
+      projects, 
+      deployments, 
+      environments, 
+      releases, 
+      numberOfReleases: 3
+    })
+
+    expect(releasesToRetain3).toHaveLength(3)
+
   })
 
-  it('logs a reason of why the release was kept', () => {
+  it('logs a reason of why each release was kept', () => {
     console.log = jest.fn()
 
     const projects = [
@@ -122,7 +133,7 @@ describe('useReleaseRetention', () => {
       }
     ]
     
-    const releasesToRetain = useReleaseRetention({
+    useReleaseRetention({
       projects,
       deployments, 
       environments, 
@@ -131,6 +142,152 @@ describe('useReleaseRetention', () => {
     })
 
     expect(console.log).toHaveBeenCalledTimes(3)
+  })
+
+  it('logs the correct reason why a release was kept', () => {
+    console.log = jest.fn()
+
+    const projects = [
+      {
+        "Id": "Project-1",
+        "Name": "Random Quotes"
+      }
+    ]
+    const deployments = [
+      {
+        "Id": "Deployment-1",
+        "ReleaseId": "Release-1",
+        "EnvironmentId": "Environment-1",
+        "DeployedAt": "2000-01-01T10:00:00"
+      },
+      {
+        "Id": "Deployment-2",
+        "ReleaseId": "Release-2",
+        "EnvironmentId": "Environment-1",
+        "DeployedAt": "2000-01-02T10:00:00"
+      },
+      {
+        "Id": "Deployment-3",
+        "ReleaseId": "Release-3",
+        "EnvironmentId": "Environment-1",
+        "DeployedAt": "2000-01-02T11:00:00"
+      }
+    ]
+    const environments = [
+      {
+        "Id": "Environment-1",
+        "Name": "Staging"
+      }
+    ]
+    const releases = [
+      {
+        "Id": "Release-1",
+        "ProjectId": "Project-1",
+        "Version": "1.0.0",
+        "Created": "2000-01-01T09:00:00"
+      },
+      {
+        "Id": "Release-2",
+        "ProjectId": "Project-1",
+        "Version": "1.0.1",
+        "Created": "2000-01-02T09:00:00"
+      },
+      {
+        "Id": "Release-3",
+        "ProjectId": "Project-1",
+        "Version": null,
+        "Created": "2000-01-02T13:00:00"
+      }
+    ]
+
+    useReleaseRetention({
+      projects,
+      deployments, 
+      environments, 
+      releases, 
+      numberOfReleases: 2
+    })
+
+    expect(console.log).toBeCalledWith(`Release-3 kept because it is the most recent deployment to Environment-1`)
+    expect(console.log).toBeCalledWith(`Release-2 kept because it is the 2nd most recent deployment to Environment-1`)
+  })
+
+  it('retains the most recent or most n recently deployed releases', () => {
+    const projects = [
+      {
+        "Id": "Project-1",
+        "Name": "Random Quotes"
+      }
+    ]
+    const deployments = [
+      {
+        "Id": "Deployment-1",
+        "ReleaseId": "Release-1",
+        "EnvironmentId": "Environment-1",
+        "DeployedAt": "2000-01-01T10:00:00"
+      },
+      {
+        "Id": "Deployment-2",
+        "ReleaseId": "Release-2",
+        "EnvironmentId": "Environment-1",
+        "DeployedAt": "2000-01-02T10:00:00"
+      },
+      {
+        "Id": "Deployment-3",
+        "ReleaseId": "Release-3",
+        "EnvironmentId": "Environment-1",
+        "DeployedAt": "2000-01-02T11:00:00"
+      }
+    ]
+    const environments = [
+      {
+        "Id": "Environment-1",
+        "Name": "Staging"
+      }
+    ]
+    const releases = [
+      {
+        "Id": "Release-1",
+        "ProjectId": "Project-1",
+        "Version": "1.0.0",
+        "Created": "2000-01-01T09:00:00"
+      },
+      {
+        "Id": "Release-2",
+        "ProjectId": "Project-1",
+        "Version": "1.0.1",
+        "Created": "2000-01-02T09:00:00"
+      },
+      {
+        "Id": "Release-3",
+        "ProjectId": "Project-1",
+        "Version": null,
+        "Created": "2000-01-02T13:00:00"
+      }
+    ]
+
+    const releasesToRetainSingle = useReleaseRetention({
+      projects, 
+      deployments, 
+      environments, 
+      releases, 
+      numberOfReleases: 1
+    })
+
+    expect(releasesToRetainSingle).toHaveLength(1)
+    expect(releasesToRetainSingle[0].Id).toBe('Release-3')
+
+    const releasesToRetainMultiple = useReleaseRetention({
+      projects, 
+      deployments, 
+      environments, 
+      releases, 
+      numberOfReleases: 2
+    })
+
+    expect(releasesToRetainMultiple).toHaveLength(2)
+    expect(releasesToRetainMultiple[0].Id).toBe('Release-3')
+    expect(releasesToRetainMultiple[1].Id).toBe('Release-2')
   })
 
   it('applies the release retention rule correctly to each project/environment combo', () => {
@@ -300,4 +457,53 @@ describe('useReleaseRetention', () => {
       { Id: 'Release-8' }
     ))
   })
+})
+
+it('does not retain releases with no deployments', () => {
+  const projects = [
+    {
+      "Id": "Project-1",
+      "Name": "Random Quotes"
+    }
+  ]
+  const deployments = [
+    {
+      "Id": "Deployment-1",
+      "ReleaseId": "Release-1",
+      "EnvironmentId": "Environment-1",
+      "DeployedAt": "2000-01-01T10:00:00"
+    }
+  ]
+  const environments = [
+    {
+      "Id": "Environment-1",
+      "Name": "Staging"
+    }
+  ]
+  const releases = [
+    {
+      "Id": "Release-1",
+      "ProjectId": "Project-1",
+      "Version": "1.0.0",
+      "Created": "2000-01-01T09:00:00"
+    },
+    {
+      "Id": "Release-2",
+      "ProjectId": "Project-1",
+      "Version": "1.0.1",
+      "Created": "2000-01-02T09:00:00"
+    }
+  ]
+
+  const releasesToRetain = useReleaseRetention({
+    projects, 
+    deployments, 
+    environments, 
+    releases, 
+    numberOfReleases: 2
+  })
+
+  expect(releasesToRetain).toContainEqual(expect.not.objectContaining(
+    { Id: 'Release-2' }
+  ))
 })
