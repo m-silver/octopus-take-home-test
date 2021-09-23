@@ -2,7 +2,8 @@ import {
   findReleaseByDeployment, 
   retentionReason, 
   sortDeploymentsByDate, 
-  removeDuplicateReleases } from '../utils'
+  removeDuplicateReleases 
+} from '../utils'
 
 type UseReleaseRetentionArgs = {
   numberOfReleases: number
@@ -17,7 +18,8 @@ const useReleaseRetention = ({numberOfReleases, deployments, environments, proje
 
   projects.forEach(project => {
     const projectReleases = releases.filter(release => release.ProjectId === project.Id)
-    const projectDeployments = projectReleases.map(projectRelease => deployments.filter(deployment => deployment.ReleaseId === projectRelease.Id)).flat()
+    const projectDeployments = projectReleases.map(projectRelease => 
+      deployments.filter(deployment => deployment.ReleaseId === projectRelease.Id)).flat()
 
     environments.forEach(environment => {
       const deploymentsToEnvironment = projectDeployments.filter(projectDeployment => projectDeployment.EnvironmentId === environment.Id)

@@ -2,7 +2,8 @@ import {
   sortDeploymentsByDate, 
   findReleaseByDeployment, 
   retentionReason, 
-  removeDuplicateReleases } from '../utils'
+  removeDuplicateReleases 
+} from '../utils'
 
 describe('sortDeploymentsByDate', () => {
   it('returns an array of deployments from most to least recent', () => {
