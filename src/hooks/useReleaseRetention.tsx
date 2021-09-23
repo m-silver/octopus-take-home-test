@@ -14,7 +14,7 @@ type UseReleaseRetentionArgs = {
 }
 
 const useReleaseRetention = ({numberOfReleases, deployments, environments, projects, releases}: UseReleaseRetentionArgs) => {
-  const toRetain: Release[] = []
+  const retainedReleases: Release[] = []
 
   projects.forEach(project => {
     const projectReleases = releases.filter(release => release.ProjectId === project.Id)
@@ -27,7 +27,7 @@ const useReleaseRetention = ({numberOfReleases, deployments, environments, proje
       if (deploymentsToEnvironment.length === 1) {
         const releaseToRetain = findReleaseByDeployment(projectReleases, deploymentsToEnvironment[0])
         if (releaseToRetain) {
-          toRetain.push(releaseToRetain)
+          retainedReleases.push(releaseToRetain)
           console.log(retentionReason(releaseToRetain, environment))
         }
         else console.error(`Release ${deploymentsToEnvironment[0].ReleaseId} not found.`)
@@ -38,7 +38,7 @@ const useReleaseRetention = ({numberOfReleases, deployments, environments, proje
         for (let i = 0; i < numberOfReleases && i < sorted.length; i++) {
           const releaseToRetain = findReleaseByDeployment(projectReleases, deploymentsToEnvironment[i])
           if (releaseToRetain) {
-            toRetain.push(releaseToRetain)
+            retainedReleases.push(releaseToRetain)
             console.log(retentionReason(releaseToRetain, environment, i))
           }           
           else console.error(`Release ${deploymentsToEnvironment[0].ReleaseId} not found.`)
@@ -47,7 +47,7 @@ const useReleaseRetention = ({numberOfReleases, deployments, environments, proje
     })
   })
 
-  return removeDuplicateReleases(toRetain)
+  return removeDuplicateReleases(retainedReleases)
 }
 
 export default useReleaseRetention
