@@ -1,0 +1,10 @@
+[
+  {
+    "Id": "Environment-1",
+    "Name": "Staging"
+  },
+  {
+    "Id": "Environment-2",
+    "Name": "Production"
+  }
+]
